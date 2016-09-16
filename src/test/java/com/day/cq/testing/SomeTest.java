@@ -23,6 +23,7 @@ import org.apache.sling.commons.testing.jcr.RepositoryUtil;
 import org.apache.sling.testing.mock.sling.ResourceResolverType;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import javax.jcr.RepositoryException;
@@ -34,7 +35,8 @@ import java.io.IOException;
  */
 public class SomeTest {
 
-    public AemContext context = new AemContext(ResourceResolverType.JCR_OAK);
+    @Rule
+    public AemContext context = new AemContext(ResourceResolverType.JCR_MOCK);
 
     Resource theResouce;
 
@@ -42,7 +44,7 @@ public class SomeTest {
     public void setUp() throws IOException, RepositoryException {
         Session session = context.resourceResolver().adaptTo(Session.class);
         RepositoryUtil.registerSlingNodeTypes(session);
-        context.create().resource("/content/the-resource");
+        theResouce = context.create().resource("/content/the-resource");
     }
 
     @Test
