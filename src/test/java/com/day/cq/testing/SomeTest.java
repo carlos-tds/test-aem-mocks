@@ -37,7 +37,7 @@ import java.util.Iterator;
 public class SomeTest {
 
     @Rule
-    public AemContext context = new AemContext(ResourceResolverType.JCR_MOCK);
+    public AemContext context = new AemContext(ResourceResolverType.JCR_OAK);
 
     Resource theResouce;
 
@@ -50,8 +50,11 @@ public class SomeTest {
 
     @Test
     public void testFindResource() {
-        Iterator<Resource> resources = context.resourceResolver().findResources("select * from [nt:unstructured] as N where isdescendantnode(N,'/content')", Query.JCR_SQL2);
+        Iterator<Resource> resources = context.resourceResolver().findResources("select * from [nt:unstructured] as N where isdescendantnode(N,'/content') and name='page'", Query.JCR_SQL2);
         Assert.assertTrue("No resources found", resources.hasNext());
+
+        Resource theResource = resources.next();
+        Assert.assertEquals("Resource is the correct one", "/content/website/page", theResource.getPath());
     }
 
     @Test
