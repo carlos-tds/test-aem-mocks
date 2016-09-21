@@ -19,7 +19,6 @@ package com.day.cq.testing;
 
 import io.wcm.testing.mock.aem.junit.AemContext;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.commons.testing.jcr.RepositoryUtil;
 import org.apache.sling.testing.mock.sling.ResourceResolverType;
 import org.junit.Assert;
 import org.junit.Before;
@@ -28,7 +27,9 @@ import org.junit.Test;
 
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.query.Query;
 import java.io.IOException;
+import java.util.Iterator;
 
 /**
  * Your comment here
@@ -43,12 +44,18 @@ public class SomeTest {
     @Before
     public void setUp() throws IOException, RepositoryException {
         Session session = context.resourceResolver().adaptTo(Session.class);
-        RepositoryUtil.registerSlingNodeTypes(session);
-        theResouce = context.create().resource("/content/the-resource");
+        context.load().json(getClass().getResourceAsStream("/sample_content.json"),"/content");
+        context.resourceResolver().commit();
+    }
+
+    @Test
+    public void testFindResource() {
+        Iterator<Resource> resources = context.resourceResolver().findResources("select * from [nt:unstructured] as N where isdescendantnode(N,'/content')", Query.JCR_SQL2);
+        Assert.assertTrue("No resources found", resources.hasNext());
     }
 
     @Test
     public void testSomething() {
-        Assert.assertNotNull(theResouce);
+        Assert.assertNotNull(context.resourceResolver().getResource("/content"));
     }
 }
